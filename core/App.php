@@ -41,9 +41,11 @@ class App
 
     public function run()
     {
-        $this->init()
+        $response = $this->init()
             ->startSession()
             ->dispatch();
+
+        $this->terminate($response);
     }
 
     protected function init(): App
@@ -71,10 +73,13 @@ class App
         return $this;
     }
 
-    protected function dispatch(): App
+    protected function dispatch()
     {
-        Router::dispatch($this->request);
+        return Router::dispatch($this->request);
+    }
 
-        return $this;
+    protected function terminate($response)
+    {
+        exit($response);
     }
 }

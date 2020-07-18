@@ -1,5 +1,5 @@
 <?php
 
 return [
-    '/' => fn() => 'routest works',
+    '/' => fn() => 'routes works from routes.php',
 ];
