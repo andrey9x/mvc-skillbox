@@ -5,6 +5,7 @@ namespace Core;
 
 
 use Core\Http\Request;
+use Core\Http\Response;
 use Core\Http\Router;
 use Core\Session\SessionHandler;
 
@@ -41,6 +42,7 @@ class App
 
     public function run()
     {
+        /** @var Response $response */
         $response = $this->init()
             ->startSession()
             ->dispatch();
@@ -55,6 +57,7 @@ class App
 
         $this->request = Request::init();
         Router::setRoutes($this->routesPath);
+        View::init(self::$root . $this->config['app']['view_path']);
 
         set_error_handler([ErrorHandler::class, 'error']);
         set_exception_handler([ErrorHandler::class, 'exception']);
@@ -78,8 +81,14 @@ class App
         return Router::dispatch($this->request);
     }
 
-    protected function terminate($response)
+    protected function terminate(Response $response)
     {
-        exit($response);
+        foreach ($response->getHeaders() as $header => $value) {
+            header($header . ':' . $value);
+        }
+
+        http_response_code($response->getStatus());
+
+        exit($response->getContent());
     }
 }

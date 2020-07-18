@@ -15,7 +15,7 @@ class Router
         self::$routes = include $routesPath;
     }
 
-    public static function dispatch(?Request $request)
+    public static function dispatch(?Request $request): Response
     {
          $handler = self::$routes[$request->path()] ?? null;
 
@@ -23,6 +23,12 @@ class Router
              throw new Exception("404 not found");
          }
 
-         return call_user_func_array($handler, []);
+         $response = call_user_func_array($handler, [$request, new Response()]);
+
+         if (!$response instanceof Response) {
+             return (new Response())->send($response);
+         }
+
+         return $response;
     }
 }
