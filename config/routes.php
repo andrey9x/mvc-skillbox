@@ -1,3 +1,5 @@
 <?php
 
-return [];
+return [
+    '/' => fn() => 'routest works',
+];

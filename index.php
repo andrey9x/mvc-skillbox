@@ -8,5 +8,3 @@ $app->setConfigPath('/config/config.php')
     ->setRoutesPath('/config/routes.php');
 
 $app->run();
-
-echo 'app works!';

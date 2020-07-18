@@ -4,20 +4,20 @@
 namespace Core;
 
 
+use Core\Http\Request;
+use Core\Http\Router;
 use Core\Session\SessionHandler;
 
 class App
 {
-    /** @var string */
-    protected static $root;
+    protected static string $root;
 
-    /** @var string */
-    protected $configPath;
-    /** @var string */
-    protected $routesPath;
+    protected string $configPath;
+    protected string $routesPath;
 
-    /** @var array */
-    protected $config = [];
+    protected array $config = [];
+
+    protected ?Request $request = null;
 
     public function __construct()
     {
@@ -26,23 +26,16 @@ class App
         $this->routesPath = self::$root . '/config/routes.php';
     }
 
-    /**
-     * @param string $configPath
-     * @return App
-     */
-    public function setConfigPath($configPath): App
+    public function setConfigPath(string $configPath): App
     {
         $this->configPath = self::$root . $configPath;
         return $this;
     }
 
-    /**
-     * @param string $routesPath
-     * @return App
-     */
-    public function setRoutesPath($routesPath): App
+    public function setRoutesPath(string $routesPath): App
     {
         $this->routesPath = self::$root .$routesPath;
+
         return $this;
     }
 
@@ -53,10 +46,13 @@ class App
             ->dispatch();
     }
 
-    protected function init()
+    protected function init(): App
     {
         // configPath = config/config.php
         $this->config = include $this->configPath;
+
+        $this->request = Request::init();
+        Router::setRoutes($this->routesPath);
 
         set_error_handler([ErrorHandler::class, 'error']);
         set_exception_handler([ErrorHandler::class, 'exception']);
@@ -64,7 +60,7 @@ class App
         return $this;
     }
 
-    protected function startSession()
+    protected function startSession(): App
     {
         session_save_path(self::$root . $this->config['app']['session_save_path']);
         session_set_save_handler(new SessionHandler());
@@ -75,8 +71,10 @@ class App
         return $this;
     }
 
-    protected function dispatch()
+    protected function dispatch(): App
     {
+        Router::dispatch($this->request);
+
         return $this;
     }
 }

@@ -8,8 +8,7 @@ use Core\App;
 
 class SessionHandler implements \SessionHandlerInterface
 {
-    /** @var string */
-    protected $savePath = '';
+    protected string $savePath = '';
 
     /**
      * @inheritDoc
