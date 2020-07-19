@@ -16,7 +16,7 @@ class App
     protected string $configPath;
     protected string $routesPath;
 
-    protected array $config = [];
+    protected static array $config = [];
 
     protected ?Request $request = null;
 
@@ -35,7 +35,7 @@ class App
 
     public function setRoutesPath(string $routesPath): App
     {
-        $this->routesPath = self::$root .$routesPath;
+        $this->routesPath = self::$root . $routesPath;
 
         return $this;
     }
@@ -53,11 +53,11 @@ class App
     protected function init(): App
     {
         // configPath = config/config.php
-        $this->config = include $this->configPath;
+        self::$config = include $this->configPath;
 
         $this->request = Request::init();
         Router::setRoutes($this->routesPath);
-        View::init(self::$root . $this->config['app']['view_path']);
+        View::init(self::$root . self::config('app.view_path'));
 
         set_error_handler([ErrorHandler::class, 'error']);
         set_exception_handler([ErrorHandler::class, 'exception']);
@@ -67,7 +67,7 @@ class App
 
     protected function startSession(): App
     {
-        session_save_path(self::$root . $this->config['app']['session_save_path']);
+        session_save_path(self::$root . self::config('app.session_save_path'));
         session_set_save_handler(new SessionHandler());
         session_start();
 
@@ -90,5 +90,22 @@ class App
         http_response_code($response->getStatus());
 
         exit($response->getContent());
+    }
+
+    /**
+     * @param string $keyPath
+     * @param null $default
+     * @return mixed
+     */
+    public static function config(string $keyPath, $default = null)
+    {
+        $keys = explode('.', $keyPath);
+        $value = self::$config;
+
+        foreach ($keys as $key) {
+            $value = $value[$key] ?? $default;
+        }
+
+        return $value;
     }
 }
