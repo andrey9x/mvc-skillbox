@@ -4,6 +4,7 @@
 namespace App\Http;
 
 
+use App\Models\User;
 use Core\Database\QueryBuilder;
 use Core\Http\{Request, Response};
 use Core\View;
@@ -24,5 +25,11 @@ class HomeController
     {
         $query = new QueryBuilder();
         var_dump($query->table('users')->select(['id', 'name'])->where('age', '=', 27)->toSql());
+    }
+
+    public function testModel()
+    {
+        var_dump(User::query()->select(['id'])->where('id', '1')->toSql());
+        return '';
     }
 }

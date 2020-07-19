@@ -27,6 +27,12 @@ class QueryBuilder
         return $this;
     }
 
+    public function model(string $model): QueryBuilder
+    {
+        $this->connect->setFetchMode([Connect::AS_OBJECT, $model]);
+        return $this;
+    }
+
     /**
      * @param array $selects
      * @return QueryBuilder

@@ -23,15 +23,11 @@ class Connect
         $dsn = "{$config['driver']}:host={$config['host']};port={$config['port']};dbname={$config['dbname']}";
 
         $this->pdo = new PDO($dsn, $config['user'], $config['password']);
-
-        var_dump(PDO::getAvailableDrivers());
-        var_dump($this->pdo->errorInfo());
     }
 
-    public function setFetchMode(array $fetchMode): Connect
+    public function setFetchMode(array $fetchMode): void
     {
         $this->fetchMode = $fetchMode;
-        return $this;
     }
 
     /**
@@ -57,7 +53,7 @@ class Connect
         return $this->execute($sql, $params)->fetchAll();
     }
 
-    public function fetchLazy(string $sql, array $params)
+    public function fetchLazy(string $sql, array $params): \Generator
     {
         $statement = $this->execute($sql, $params);
         while ($row = $statement->fetch()) {
